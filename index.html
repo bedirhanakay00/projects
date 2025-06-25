@@ -2,139 +2,168 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Günün Prompt’u</title>
-    <!-- Tailwind CSS for styling -->
+    <!-- Tailwind CSS'i CDN üzerinden ekliyoruz -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for a modern look -->
+    <!-- Google Fonts'tan Inter fontunu ekliyoruz -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Using a style block for better organization and custom styles */
+        /* Temel stil ve font ailesi ayarları */
         body {
             font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent; /* Removes blue tap highlight on mobile */
+            /* Masaüstünde dış alanın beyaz olması için arkaplanı ayarlıyoruz */
+            background-color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* A subtle animation for the notification */
+        /* Tıklama sırasında butonda oluşacak gölge efekti */
+        .btn-press:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Kopyalama bildirimi için animasyon */
         @keyframes fadeInOut {
             0%, 100% { opacity: 0; transform: translateY(20px); }
             10%, 90% { opacity: 1; transform: translateY(0); }
         }
-
         .notification-animation {
             animation: fadeInOut 3s ease-in-out forwards;
         }
+
+        /* Mobil cihazlarda tam ekran, masaüstünde kart görünümü */
+        #ad-wrapper {
+            width: 100%;
+            height: 100%;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                background-color: #ffffff;
+            }
+            #ad-wrapper {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem;
+                min-height: 100vh;
+            }
+            #ad-container {
+                max-width: 420px;
+                max-height: 850px;
+                border-radius: 1.5rem;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                height: 90vh;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-900 text-white overflow-hidden h-screen flex items-center justify-center p-4">
+<body class="bg-gray-900 md:bg-white">
 
-    <!-- Main container for the ad content -->
-    <div class="w-full max-w-sm mx-auto text-center">
-
-        <!-- Header Section -->
-        <header class="mb-8">
-            <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-500 text-transparent bg-clip-text">
-                Günün Prompt’u
-            </h1>
-            <p class="text-gray-300 text-sm md:text-base mt-2">Kariyerinde yapay zekayla bir adım ileride ol</p>
-        </header>
-
-        <!-- Prompt Box with Copy Button -->
-        <div class="relative w-full">
-            <!-- The box that looks like a non-editable textarea -->
-            <div id="prompt-box" class="bg-gray-800 border border-gray-600 rounded-xl p-4 text-left text-gray-200 text-base shadow-lg w-full pr-14">
-                Bir toplantı özetini 3 maddeyle çıkar ve bana öneri sun
-            </div>
-            
-            <!-- Copy Button -->
-            <button id="copy-button" class="absolute top-1/2 right-3 -translate-y-1/2 p-2 rounded-full hover:bg-gray-700 active:bg-gray-600 transition-colors duration-200" aria-label="Promptu Kopyala">
-                <!-- Clipboard Icon SVG -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+    <!-- Reklamı ortalayan ve masaüstü arkaplanını ayarlayan sarmalayıcı -->
+    <div id="ad-wrapper">
+        <!-- Ana Reklam Konteyneri -->
+        <div id="ad-container" class="relative w-full h-full flex flex-col justify-between bg-[#111827] text-center text-white overflow-hidden md:p-8 p-6">
+    
+            <!-- Kapatma Butonu -->
+            <button id="close-button" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200 z-10 p-2 rounded-full hover:bg-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
             </button>
+    
+            <!-- Üst Başlık Alanı -->
+            <header>
+                <h1 class="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
+                    Günün Prompt’u
+                </h1>
+                <p class="text-gray-300 mt-2 text-sm md:text-base">
+                    Kariyerinde yapay zekayla bir adım ileride ol
+                </p>
+            </header>
+    
+            <!-- Orta Alan: Prompt Kutusu -->
+            <main class="my-8">
+                <div class="relative">
+                    <!-- Düzenlenemez Prompt Metin Kutusu -->
+                    <div id="prompt-container" class="bg-gray-800 border border-gray-700 rounded-xl p-4 text-left text-gray-200 text-base md:text-lg w-full pr-14">
+                        <p id="prompt-text">Bugünkü yapılacaklar listemi Eisenhower matriksine göre sırala.</p>
+                    </div>
+                    
+                    <!-- Kopyala Butonu -->
+                    <button id="copy-button" class="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 p-2 rounded-lg hover:bg-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clipboard">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                    </button>
+                </div>
+            </main>
+    
+            <!-- Alt Alan: CTA Butonu -->
+            <footer>
+                <button class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out text-lg md:text-xl btn-press">
+                    Yapay Zeka ile Dene!
+                </button>
+            </footer>
         </div>
-
-        <!-- Call to Action (CTA) Button -->
-        <div class="mt-10">
-            <a href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer" class="block w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-4 px-6 rounded-full text-lg shadow-xl transform transition-transform duration-200 active:scale-95">
-                Yapay Zeka ile Dene!
-            </a>
-        </div>
-
     </div>
-
-    <!-- Notification element for copy feedback -->
-    <div id="notification" class="hidden fixed bottom-10 left-1/2 -translate-x-1/2 bg-green-500 text-white py-2 px-5 rounded-full text-sm shadow-lg">
-        Kopyalandı!
+    
+    <!-- Kopyalama Bildirimi -->
+    <div id="notification" class="hidden fixed bottom-10 left-1/2 -translate-x-1/2 bg-green-500 text-white text-sm py-2 px-4 rounded-full shadow-lg z-20">
+        Prompt kopyalandı!
     </div>
 
 
     <script>
-        // --- JavaScript for Copy Functionality ---
-
-        // Get the necessary elements from the DOM
+        // Gerekli DOM elementlerini seçiyoruz
         const copyButton = document.getElementById('copy-button');
-        const promptBox = document.getElementById('prompt-box');
+        const promptText = document.getElementById('prompt-text').innerText;
         const notification = document.getElementById('notification');
+        const closeButton = document.getElementById('close-button');
+        const adWrapper = document.getElementById('ad-wrapper');
 
-        // Add a click event listener to the copy button
-        copyButton.addEventListener('click', () => {
-            const textToCopy = promptBox.innerText.trim();
-
-            // The 'navigator.clipboard.writeText' is modern but can fail in sandboxed iframes.
-            // A fallback to 'document.execCommand' is more robust for ads.
-            if (navigator.clipboard && window.isSecureContext) {
-                // Modern, secure way
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    showNotification();
-                }).catch(err => {
-                    // Fallback if promise rejects
-                    copyLegacy(textToCopy);
-                });
-            } else {
-                // Legacy fallback for older browsers or insecure contexts
-                copyLegacy(textToCopy);
-            }
+        // Kapatma butonuna tıklama olayını dinliyoruz
+        closeButton.addEventListener('click', () => {
+            // Gerçek bir reklam ortamında (MRAID gibi), mraid.close() fonksiyonu çağrılır.
+            // Bu örnek için, reklamı sadece gizliyoruz.
+            adWrapper.style.display = 'none';
         });
 
-        // Function to show the "Kopyalandı!" notification
-        function showNotification() {
-            notification.classList.remove('hidden');
-            notification.classList.add('notification-animation');
-            
-            // Hide the notification after the animation ends (3 seconds)
-            setTimeout(() => {
-                notification.classList.add('hidden');
-                notification.classList.remove('notification-animation');
-            }, 3000);
-        }
-
-        // Legacy copy function for maximum compatibility
-        function copyLegacy(text) {
+        // Kopyala butonuna tıklama olayını dinliyoruz
+        copyButton.addEventListener('click', () => {
             const textArea = document.createElement('textarea');
-            textArea.value = text;
-            
-            // Make the textarea invisible and add it to the DOM
+            textArea.value = promptText;
             textArea.style.position = 'fixed';
-            textArea.style.top = '-9999px';
             textArea.style.left = '-9999px';
             document.body.appendChild(textArea);
             
-            // Select and copy the text
             textArea.select();
             try {
                 document.execCommand('copy');
-                showNotification(); // Show feedback on success
+                showNotification();
             } catch (err) {
                 console.error('Kopyalama işlemi başarısız oldu:', err);
+                alert('Kopyalama başarısız oldu. Lütfen manuel olarak kopyalayın.');
             } finally {
-                // Clean up by removing the temporary textarea
                 document.body.removeChild(textArea);
             }
+        });
+
+        // Bildirimi gösteren ve gizleyen fonksiyon
+        function showNotification() {
+            notification.classList.remove('hidden');
+            notification.classList.add('notification-animation');
+
+            setTimeout(() => {
+                notification.classList.add('hidden');
+                notification.classList.remove('notification-animation');
+            }, 3000); // 3 saniye sonra bildirim kaybolur
         }
     </script>
 
